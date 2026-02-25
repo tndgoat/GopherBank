@@ -1,30 +1,33 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"log"
 	"os"
 	"testing"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
-	dbDriver = "postgres"
 	dbSource = "postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable"
 )
 
 var testQueries *Queries
-var testDB *sql.DB
+var testDB *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+
+	testDB, err = pgxpool.New(context.Background(), dbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 
 	testQueries = New(testDB)
 
-	os.Exit(m.Run())
+	code := m.Run()
+
+	testDB.Close()
+	os.Exit(code)
 }
