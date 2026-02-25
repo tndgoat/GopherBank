@@ -47,11 +47,11 @@ func TestGetTransfer(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, transfer2)
 
-	require.Equal(transfer1.ID, transfer2.ID)
-	require.Equal(transfer1.FromAccountID, transfer2.FromAccountID)
-	require.Equal(transfer1.ToAccountID, transfer2.ToAccountID)
-	require.Equal(transfer1.Amount, transfer2.Amount)
-	require.WithinDuration(transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
+	require.Equal(t, transfer1.ID, transfer2.ID)
+	require.Equal(t, transfer1.FromAccountID, transfer2.FromAccountID)
+	require.Equal(t, transfer1.ToAccountID, transfer2.ToAccountID)
+	require.Equal(t, transfer1.Amount, transfer2.Amount)
+	require.WithinDuration(t, transfer1.CreatedAt, transfer2.CreatedAt, time.Second)
 }
 
 func TestListTransfers(t *testing.T) {
