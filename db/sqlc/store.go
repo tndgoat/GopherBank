@@ -119,10 +119,10 @@ func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (Trans
 		// }
 
 		// Atomic SQL Update
-		if arg.fromAccountID < arg.toAccountID {
-			result.FromAccount, from.ToAccount, err = addMoney(ctx, q, arg.fromAccountID, -arg.amount, arg.toAccountID, arg.amount)
+		if arg.FromAccountID < arg.ToAccountID {
+			result.FromAccount, from.ToAccount, err = addMoney(ctx, q, arg.FromAccountID, -arg.Amount, arg.ToAccountID, arg.Amount)
 		} else {
-			result.ToAccount, from.FromAccount, err = addMoney(ctx, q, arg.toAccountID, arg.amount, arg.fromAccountID, -arg.amount)
+			result.ToAccount, from.FromAccount, err = addMoney(ctx, q, arg.ToAccountID, arg.Amount, arg.FromAccountID, -arg.Amount)
 		}
 
 		return nil

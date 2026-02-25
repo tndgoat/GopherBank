@@ -9,7 +9,7 @@ import (
 	"github.com/tndgoat/gopherbank/util"
 )
 
-func createRandomTransfer(t *testing.T, account1, account2 Account) transfer {
+func createRandomTransfer(t *testing.T, account1, account2 Account) Transfer {
 	arg := CreateTransferParams{
 		FromAccountID:	account1.ID,
 		ToAccountID:	account2.ID,
