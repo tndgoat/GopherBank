@@ -60,7 +60,7 @@ func TestGetAccountAPI(t *testing.T) {
 				store.EXPECT().
 				GetAccount(gomock.Any(), gomock.Eq(account.ID)).
 				Times(1).
-				Return(db.Account{}, pgx.ErrConnDone)
+				Return(db.Account{}, errors.New("db connection error"))
 			},
 			checkResponse:	func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
