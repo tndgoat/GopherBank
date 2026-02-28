@@ -110,7 +110,7 @@ func TestGetAccountAPI(t *testing.T) {
 func TestCreateAccountAPI(t *testing.T) {
 	account := randomAccount()
 
-	testCases := []struct{}{
+	testCases := []struct{
 		name			string
 		body			gin.H
 		buildStubs		func(store *mockdb.MockStore)
