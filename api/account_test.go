@@ -115,7 +115,7 @@ func TestCreateAccountAPI(t *testing.T) {
 		name			string
 		body			gin.H
 		buildStubs		func(store *mockdb.MockStore)
-		expectStatus	int
+		checkResponse	func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name: "OK",
@@ -135,33 +135,10 @@ func TestCreateAccountAPI(t *testing.T) {
 					Times(1).
 					Return(account, nil)
 			},
-			expectStatus: http.StatusOK,
-		},
-		{
-			name: "InvalidCurrency",
-			body: gin.H{
-				"owner":    account.Owner,
-				"currency": "invalid",
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchAccount(t, recorder.Body, account)
 			},
-			buildStubs: func(store *mockdb.MockStore) {
-				store.EXPECT().
-					CreateAccount(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			expectStatus: http.StatusBadRequest,
-		},
-		{
-			name: "InvalidOwner",
-			body: gin.H{
-				"owner":    "",
-				"currency": account.Currency,
-			},
-			buildStubs: func(store *mockdb.MockStore) {
-				store.EXPECT().
-					CreateAccount(gomock.Any(), gomock.Any()).
-					Times(0)
-			},
-			expectStatus: http.StatusBadRequest,
 		},
 		{
 			name: "InternalError",
@@ -175,7 +152,39 @@ func TestCreateAccountAPI(t *testing.T) {
 					Times(1).
 					Return(db.Account{}, errors.New("db connection error"))
 			},
-			expectStatus: http.StatusInternalServerError,
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+		{
+			name: "InvalidCurrency",
+			body: gin.H{
+				"owner":    account.Owner,
+				"currency": "invalid",
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					CreateAccount(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name: "InvalidOwner",
+			body: gin.H{
+				"owner":    "",
+				"currency": account.Currency,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					CreateAccount(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
 		},
 	}
 
@@ -202,7 +211,8 @@ func TestCreateAccountAPI(t *testing.T) {
 			require.NoError(t, err)
 
 			server.router.ServeHTTP(recorder, request)
-			require.Equal(t, tc.expectStatus, recorder.Code)
+			
+			tc.checkResponse(t, recorder)
 		})
 	}
 }
@@ -213,6 +223,7 @@ func randomAccount() db.Account {
 		Owner: util.RandomOwner(),
 		Balance: util.RandomMoney(),
 		Currency: util.RandomCurrency(),
+		CreatedAt: time.Now().Truncate(time.Second),
 	}
 }
 
