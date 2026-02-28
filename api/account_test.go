@@ -38,7 +38,7 @@ func TestGetAccountAPI(t *testing.T) {
 			checkResponse:	func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 				requireBodyMatchAccount(t, recorder.Body, account)
-			}
+			},
 		},
 		{
 			name:			"NotFound",
@@ -51,7 +51,7 @@ func TestGetAccountAPI(t *testing.T) {
 			},
 			checkResponse:	func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
-			}
+			},
 		},
 		{
 			name:			"InternalError",
@@ -64,7 +64,7 @@ func TestGetAccountAPI(t *testing.T) {
 			},
 			checkResponse:	func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
-			}
+			},
 		},
 		{
 			name:			"InvalidID",
@@ -76,7 +76,7 @@ func TestGetAccountAPI(t *testing.T) {
 			},
 			checkResponse:	func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusBadRequest, recorder.Code)
-			}
+			},
 		},
 	}
 
