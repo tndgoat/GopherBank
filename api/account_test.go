@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
