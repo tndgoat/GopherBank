@@ -35,11 +35,11 @@ func (server *Server) createAccount(ctx *gin.Context) {
 			switch pgErr.Code {
 			// 23505 -> unique_violation
 			case "23505":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				ctx.JSON(http.StatusForbidden, errResponse(err))
 				return
 			// 23503 -> foreign_key_violation
 			case "23503":
-				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				ctx.JSON(http.StatusForbidden, errResponse(err))
 				return
 			}
 		}
