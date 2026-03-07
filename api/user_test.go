@@ -15,9 +15,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgconn"
 	"github.com/stretchr/testify/require"
-	mockdb "github.com/techschool/simplebank/db/mock"
-	db "github.com/techschool/simplebank/db/sqlc"
-	"github.com/techschool/simplebank/util"
+	mockdb "github.com/tndgoat/gopherbank/db/mock"
+	db "github.com/tndgoat/gopherbank/db/sqlc"
+	"github.com/tndgoat/gopherbank/util"
 )
 
 type eqCreateUserParamsMatcher struct {
@@ -66,7 +66,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := CreateUserParams{
+				arg := db.CreateUserParams{
 					Username: user.Username,
 					FullName: user.FullName,
 					Email: user.Email,
