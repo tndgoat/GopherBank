@@ -6,8 +6,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tndgoat/gopherbank/api"
-	"github.com/tndgoat/gopherbank/util"
 	db "github.com/tndgoat/gopherbank/db/sqlc"
+	"github.com/tndgoat/gopherbank/util"
 )
 
 func main() {
@@ -23,7 +23,10 @@ func main() {
 	defer conn.Close()
 
 	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot start server:", err)
+	}
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

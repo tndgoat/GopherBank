@@ -5,19 +5,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
-	"go.uber.org/mock/gomock"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgconn"
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/tndgoat/gopherbank/db/mock"
 	db "github.com/tndgoat/gopherbank/db/sqlc"
 	"github.com/tndgoat/gopherbank/util"
+	"go.uber.org/mock/gomock"
 )
 
 type eqCreateUserParamsMatcher struct {
@@ -69,7 +69,7 @@ func TestCreateUserAPI(t *testing.T) {
 				arg := db.CreateUserParams{
 					Username: user.Username,
 					FullName: user.FullName,
-					Email: user.Email,
+					Email:    user.Email,
 				}
 				store.EXPECT().
 					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
@@ -180,7 +180,7 @@ func TestCreateUserAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			// Marshal body data to JSON
@@ -212,7 +212,7 @@ func randomUser(t *testing.T) (user db.User, password string) {
 }
 
 func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
-	data, err := ioutil.ReadAll(body)
+	data, err := io.ReadAll(body)
 	require.NoError(t, err)
 
 	var gotUser db.User

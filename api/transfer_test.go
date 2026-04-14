@@ -8,13 +8,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go.uber.org/mock/gomock"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/tndgoat/gopherbank/db/mock"
 	db "github.com/tndgoat/gopherbank/db/sqlc"
 	"github.com/tndgoat/gopherbank/util"
+	"go.uber.org/mock/gomock"
 )
 
 func TestTransferAPI(t *testing.T) {
@@ -28,11 +28,11 @@ func TestTransferAPI(t *testing.T) {
 	account2.Currency = util.USD
 	account3.Currency = util.EUR
 
-	testCases := []struct{
-		name			string
-		body			gin.H
-		buildStubs		func(store *mockdb.MockStore)
-		checkResponse	func(t *testing.T, recorder *httptest.ResponseRecorder)
+	testCases := []struct {
+		name          string
+		body          gin.H
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
 	}{
 		{
 			name: "OK",
@@ -204,7 +204,7 @@ func TestTransferAPI(t *testing.T) {
 			tc.buildStubs(store)
 
 			// start test server and send request
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			// marshal body data to JSON
