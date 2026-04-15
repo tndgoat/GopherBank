@@ -2,12 +2,11 @@ name: ci-test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ['master']
   pull_request:
-    branches: [ "master" ]
+    branches: ['master']
 
 jobs:
-
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -34,21 +33,25 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
 
-    - name: Install golang-migrate
-      run: |
-        curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
-        sudo mv migrate /usr/bin/
-        which migrate
+      - name: Install golang-migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.19.1/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/bin/
+          which migrate
 
-    - name: Run migrations
-      run: make migrateup
+      - name: Run migrations
+        run: make migrateup
+        env:
+          DB_SOURCE: postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable
 
-    - name: Test
-      run: make test
+      - name: Test
+        run: make test
+        env:
+          DB_SOURCE: postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable
