@@ -27,18 +27,22 @@ jobs:
           - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U root -d gopher_bank"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DB_SOURCE: postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: '1.25'
 
       - name: Install golang-migrate
         run: |
@@ -46,12 +50,15 @@ jobs:
           sudo mv migrate /usr/bin/
           which migrate
 
+      - name: Wait for Postgres
+        run: |
+          until pg_isready -h localhost -p 5432 -U root; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+
       - name: Run migrations
         run: make migrateup
-        env:
-          DB_SOURCE: postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable
 
-      - name: Test
-        run: make test
-        env:
-          DB_SOURCE: postgresql://root:secret@localhost:5432/gopher_bank?sslmode=disable
+      - name: Run tests
+        run: go test -v -cover ./...
